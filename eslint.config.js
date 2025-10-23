@@ -8,7 +8,7 @@ import importPlugin from 'eslint-plugin-import'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', '_coverage']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
