@@ -115,6 +115,88 @@ yarn preview
 
 ---
 
+## 🐳 Docker Deployment
+
+The application includes Docker support for both development and production environments.
+
+### Docker Prerequisites
+
+- **Docker:** Latest version
+- **Docker Compose:** Latest version
+
+### Quick Start
+
+```bash
+# Development mode (with hot reload)
+yarn docker:dev
+
+# Production mode
+yarn docker:prod
+
+# Stop services
+docker-compose down
+```
+
+### Development Mode
+
+Run the app in development mode with hot reload on port 5173:
+
+```bash
+yarn docker:dev
+```
+
+Visit `http://localhost:5173` in your browser.
+
+**Features:**
+
+- 🔥 Hot module replacement
+- 📁 Volume mounting (changes reflect immediately)
+- 🛠️ Full development tooling
+
+### Production Mode
+
+Run the app in production mode on port 3000:
+
+```bash
+yarn docker:prod
+```
+
+Visit `http://localhost:3000` in your browser.
+
+**Features:**
+
+- 🚀 Optimized Nginx configuration
+- 📦 Gzip compression
+- 🔒 Security headers
+- ⚡ Asset caching (1 year for JS/CSS)
+- 💚 Health checks every 30 seconds
+
+### Docker Architecture
+
+**Multi-stage Build:**
+
+- **Builder Stage:** Node.js 22.12.0 Alpine - Installs dependencies and builds the app
+- **Production Stage:** Nginx Alpine - Serves static files with optimized configuration
+
+**Production Features:**
+
+- ✅ Gzip compression for faster loading
+- ✅ Security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection)
+- ✅ SPA routing support (all routes serve index.html)
+- ✅ Static asset caching (1 year for JS/CSS, no-cache for HTML)
+- ✅ Health checks every 30 seconds
+- ✅ Automatic container restart on failure
+
+**Build Features:**
+
+- Small image size (~50MB for production)
+- Multi-stage build with Node.js 22.12.0 Alpine
+- Nginx Alpine for serving static files
+- No-cache builds for consistency
+- Frozen lockfile for reproducible builds
+
+---
+
 ## 🧪 Testing
 
 This project has **comprehensive test coverage** with 60 tests across 4 test suites.
@@ -213,7 +295,7 @@ SCSS files are automatically compiled by Vite during development and build.
 ```
 foodstuff-test-app-1/
 ├── .github/
-│   └── workflows/           # GitHub Actions (version bump automation)
+│   └── workflows/           # GitHub Actions (CI/CD automation)
 ├── .husky/                  # Git hooks configuration
 ├── src/
 │   ├── __mocks__/          # Mock files for testing
@@ -235,6 +317,10 @@ foodstuff-test-app-1/
 │   ├── main.tsx            # Application entry point
 │   ├── setupTests.ts       # Jest configuration
 │   └── vite-env.d.ts       # Vite type definitions
+├── .dockerignore           # Docker build context exclusions
+├── docker-compose.yml      # Docker Compose configuration
+├── Dockerfile              # Multi-stage Docker build
+├── nginx.conf              # Nginx web server configuration
 ├── eslint.config.js        # ESLint configuration
 ├── jest.config.ts          # Jest configuration
 ├── package.json            # Dependencies and scripts
@@ -498,7 +584,7 @@ yarn test
 
 ```bash
 # Remove old coverage
-rm -rf _coverage
+rm -rf coverage
 yarn test:coverage
 ```
 
@@ -513,6 +599,53 @@ yarn format
 
 # Reinstall hooks
 yarn prepare
+```
+
+### Docker Issues
+
+**Docker build failing?**
+
+```bash
+# Check Docker daemon is running
+docker info
+
+# Clear Docker cache and rebuild
+docker system prune -a
+yarn docker:build
+```
+
+**Container won't start?**
+
+```bash
+# Check if port is already in use
+lsof -i :3000  # Production
+lsof -i :5173  # Development
+
+# View container logs
+docker logs foodstuff-app
+docker-compose logs foodstuff-calculator
+```
+
+**Changes not reflecting in development container?**
+
+```bash
+# Ensure you're using the dev service with volume mounting
+yarn docker:dev
+
+# Rebuild if needed
+docker-compose up --build foodstuff-calculator-dev
+```
+
+**Image size too large?**
+
+```bash
+# Check image size
+docker images foodstuff-calculator
+
+# Ensure .dockerignore is properly configured
+cat .dockerignore
+
+# Production image should be ~50MB (nginx:alpine + built assets)
 ```
 
 ---

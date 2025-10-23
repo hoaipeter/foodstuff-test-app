@@ -20,7 +20,9 @@
     "prepare": "husky",
     "version:patch": "npm version patch",
     "version:minor": "npm version minor",
-    "version:major": "npm version major"
+    "version:major": "npm version major",
+    "docker:dev": "docker-compose build --no-cache foodstuff-calculator-dev && docker-compose up foodstuff-calculator-dev",
+    "docker:prod": "docker-compose build --no-cache foodstuff-calculator && docker-compose up foodstuff-calculator"
   },
   "dependencies": {
     "formik": "^2.4.6",
