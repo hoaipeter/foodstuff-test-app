@@ -5,16 +5,33 @@ node_modules
 dist
 build
 
+# Testing
+_coverage
+coverage
+
 # Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # OS
 .DS_Store
+Thumbs.db
 
 # IDE
 .vscode
 .idea
+*.swp
+*.swo
+*~
 
 # Other
-_coverage
 *.local
+.env
+.env.local
+.env.*.local
+
+# Generated files
+*.tsbuildinfo
+.husky/_
