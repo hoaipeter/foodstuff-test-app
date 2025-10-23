@@ -367,12 +367,33 @@ Result: 1.2.3 → 2.0.0
 
 ### ✅ What Happens After Merging PR
 
-1. 🤖 GitHub Action detects merged PR to `main`
-2. 🔍 Analyzes PR title and commit messages
-3. 📝 Bumps version in `package.json`
-4. 🏷️ Creates git tag (e.g., `v1.2.3`)
-5. 📦 Creates GitHub Release with changelog
-6. ✨ Commits changes back to `main` with `[skip ci]`
+1. 🤖 **GitHub Action detects** merged PR to `main`
+2. � **Installs dependencies** and runs tests
+3. 🏗️ **Builds production bundle** using Vite
+4. �🔍 **Analyzes PR title** and commit messages
+5. 📝 **Bumps version** in `package.json`
+6. 🏷️ **Creates git tag** (e.g., `v1.2.3`)
+7. 📦 **Archives build artifacts** (ZIP and TAR.GZ)
+8. 🚀 **Creates GitHub Release** with:
+   - Release notes from PR body
+   - Downloadable build artifacts (ZIP & TAR.GZ)
+   - Installation instructions
+   - Full changelog
+9. ✨ **Commits version changes** back to `main` with `[skip ci]`
+
+### 📦 Build Artifacts
+
+Each release includes ready-to-deploy build artifacts:
+
+- **foodstuff-calculator-v{version}.zip** - Production build (ZIP format)
+- **foodstuff-calculator-v{version}.tar.gz** - Production build (TAR.GZ format)
+
+**To deploy:**
+
+1. Download the build artifact from the GitHub Release
+2. Extract the archive
+3. Upload the contents to web server or CDN
+4. The app is ready to serve! 🎉
 
 ### 🔧 Manual Version Bumping
 
