@@ -1,20 +1,62 @@
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useCalculator } from '#/hooks';
-import { DISCOUNT_TIERS, TAX_RATES } from '#/store';
-import './App.css';
+import { DISCOUNT_TIERS, TAX_RATES } from '#/utils/calculator';
+import './App.scss';
+
+interface CalculatorFormValues {
+  numItems: string;
+  pricePerItem: string;
+  regionCode: string;
+}
 
 function App() {
-  const {
-    numItems,
-    pricePerItem,
-    regionCode,
-    result,
-    error,
-    handleNumItemsChange,
-    handlePricePerItemChange,
-    handleRegionCodeChange,
-    handleCalculate,
-    handleReset,
-  } = useCalculator();
+  const { result, error, calculate, handleReset } = useCalculator();
+
+  const initialValues: CalculatorFormValues = {
+    numItems: '',
+    pricePerItem: '',
+    regionCode: 'AUK',
+  };
+
+  const validate = (values: CalculatorFormValues) => {
+    const errors: Partial<Record<keyof CalculatorFormValues, string>> = {};
+
+    if (!values.numItems) {
+      errors.numItems = 'Number of items is required';
+    } else {
+      const items = parseFloat(values.numItems);
+      if (isNaN(items) || items <= 0) {
+        errors.numItems = 'Please enter a valid positive number';
+      }
+    }
+
+    if (!values.pricePerItem) {
+      errors.pricePerItem = 'Price per item is required';
+    } else {
+      const price = parseFloat(values.pricePerItem);
+      if (isNaN(price) || price <= 0) {
+        errors.pricePerItem = 'Please enter a valid positive number';
+      }
+    }
+
+    if (!values.regionCode) {
+      errors.regionCode = 'Region code is required';
+    }
+
+    return errors;
+  };
+
+  const handleSubmit = (values: CalculatorFormValues) => {
+    const items = parseFloat(values.numItems);
+    const price = parseFloat(values.pricePerItem);
+
+    calculate(items, price, values.regionCode);
+  };
+
+  const handleResetForm = (resetForm: () => void) => {
+    handleReset();
+    resetForm();
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -30,62 +72,60 @@ function App() {
 
         {error && <div className="error-message">{error}</div>}
 
-        <form onSubmit={handleCalculate} className="calculator-form">
-          <div className="form-group">
-            <label htmlFor="numItems">Number of Items</label>
-            <input
-              id="numItems"
-              type="number"
-              value={numItems}
-              onChange={(e) => handleNumItemsChange(e.target.value)}
-              placeholder="Enter number of items"
-              min="0"
-              step="1"
-              required
-            />
-          </div>
+        <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
+          {({ resetForm }) => (
+            <Form className="calculator-form">
+              <div className="form-group">
+                <label htmlFor="numItems">Number of Items</label>
+                <Field
+                  id="numItems"
+                  name="numItems"
+                  type="number"
+                  placeholder="Enter number of items"
+                  min="0"
+                  step="1"
+                />
+                <ErrorMessage name="numItems" component="div" className="field-error" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="pricePerItem">Price per Item ($)</label>
-            <input
-              id="pricePerItem"
-              type="number"
-              value={pricePerItem}
-              onChange={(e) => handlePricePerItemChange(e.target.value)}
-              placeholder="Enter price per item"
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="pricePerItem">Price per Item ($)</label>
+                <Field
+                  id="pricePerItem"
+                  name="pricePerItem"
+                  type="number"
+                  placeholder="Enter price per item"
+                  min="0"
+                  step="0.01"
+                />
+                <ErrorMessage name="pricePerItem" component="div" className="field-error" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="regionCode">Region Code</label>
-            <select
-              id="regionCode"
-              value={regionCode}
-              onChange={(e) => handleRegionCodeChange(e.target.value)}
-              required
-            >
-              {TAX_RATES.map((region) => (
-                <option key={region.code} value={region.code}>
-                  {region.code} - {region.rate}% Tax
-                </option>
-              ))}
-            </select>
-          </div>
+              <div className="form-group">
+                <label htmlFor="regionCode">Region Code</label>
+                <Field id="regionCode" name="regionCode" as="select">
+                  {TAX_RATES.map((region) => (
+                    <option key={region.code} value={region.code}>
+                      {region.code} - {region.rate}% Tax
+                    </option>
+                  ))}
+                </Field>
+                <ErrorMessage name="regionCode" component="div" className="field-error" />
+              </div>
 
-          <div className="button-group">
-            <button type="submit" className="calculate-btn">
-              Calculate
-            </button>
-            {result && (
-              <button type="button" onClick={handleReset} className="reset-btn">
-                Reset
-              </button>
-            )}
-          </div>
-        </form>
+              <div className="button-group">
+                <button type="submit" className="calculate-btn">
+                  Calculate
+                </button>
+                {result && (
+                  <button type="button" onClick={() => handleResetForm(resetForm)} className="reset-btn">
+                    Reset
+                  </button>
+                )}
+              </div>
+            </Form>
+          )}
+        </Formik>
 
         {result && (
           <div className="results">

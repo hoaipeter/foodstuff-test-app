@@ -1,79 +1,32 @@
-import { useCallback } from 'react';
-import {
-  calculateOrder,
-  resetCalculator,
-  setError,
-  setNumItems,
-  setPricePerItem,
-  setRegionCode,
-  setResult,
-  startCalculation,
-  useAppDispatch,
-  useAppSelector,
-} from '#/store';
+import { useCallback, useState } from 'react';
+import type { CalculationResult } from '#/types';
+import { calculateOrder } from '#/utils/calculator';
 
 export const useCalculator = () => {
-  const dispatch = useAppDispatch();
-  const { numItems, pricePerItem, regionCode, result, isCalculating, error } = useAppSelector(
-    (state) => state.calculator,
-  );
+  const [result, setResult] = useState<CalculationResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleNumItemsChange = useCallback(
-    (value: string) => {
-      dispatch(setNumItems(value));
-    },
-    [dispatch],
-  );
+  const calculate = useCallback((items: number, price: number, region: string) => {
+    if (isNaN(items) || isNaN(price) || items <= 0 || price <= 0) {
+      setError('Please enter valid positive numbers');
+      setResult(null);
+      return;
+    }
 
-  const handlePricePerItemChange = useCallback(
-    (value: string) => {
-      dispatch(setPricePerItem(value));
-    },
-    [dispatch],
-  );
-
-  const handleRegionCodeChange = useCallback(
-    (value: string) => {
-      dispatch(setRegionCode(value));
-    },
-    [dispatch],
-  );
-
-  const handleCalculate = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-
-      dispatch(startCalculation());
-
-      const items = parseFloat(numItems);
-      const price = parseFloat(pricePerItem);
-
-      if (isNaN(items) || isNaN(price) || items <= 0 || price <= 0) {
-        dispatch(setError('Please enter valid positive numbers'));
-        return;
-      }
-
-      const calculation = calculateOrder(items, price, regionCode);
-      dispatch(setResult(calculation));
-    },
-    [dispatch, numItems, pricePerItem, regionCode],
-  );
+    setError(null);
+    const calculation = calculateOrder(items, price, region);
+    setResult(calculation);
+  }, []);
 
   const handleReset = useCallback(() => {
-    dispatch(resetCalculator());
-  }, [dispatch]);
+    setResult(null);
+    setError(null);
+  }, []);
 
   return {
-    numItems,
-    pricePerItem,
-    regionCode,
     result,
-    isCalculating,
     error,
-    handleNumItemsChange,
-    handlePricePerItemChange,
-    handleRegionCodeChange,
-    handleCalculate,
+    calculate,
     handleReset,
   };
 };

@@ -11,8 +11,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -23,10 +23,9 @@
     "version:major": "npm version major"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.9.2",
+    "formik": "^2.4.6",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-redux": "^9.2.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
@@ -53,6 +52,7 @@
     "jest-environment-jsdom": "^30.2.0",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
+    "sass": "^1.93.2",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
@@ -64,7 +64,7 @@
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,css,md}": [
+    "*.{json,css,scss,md}": [
       "prettier --write"
     ]
   },

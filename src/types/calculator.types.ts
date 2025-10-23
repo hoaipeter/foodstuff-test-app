@@ -17,12 +17,3 @@ export interface TaxRate {
   code: string;
   rate: number;
 }
-
-export interface CalculatorState {
-  numItems: string;
-  pricePerItem: string;
-  regionCode: string;
-  result: CalculationResult | null;
-  isCalculating: boolean;
-  error: string | null;
-}
