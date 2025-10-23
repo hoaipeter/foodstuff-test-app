@@ -3,7 +3,13 @@
   "compilerOptions": {
     "types": ["jest", "@testing-library/jest-dom", "node"],
     "verbatimModuleSyntax": false,
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+    "baseUrl": ".",
+    "paths": {
+      "#/*": ["./src/*"]
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*.test.ts",
